@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import { createSocketDebugger } from './SocketDebug';
 
 // Create socket connection with proper configuration
-export const socket = io(process.env.REACT_APP_SERVER_URL || "http://localhost:5000", {
+export const socket = io(process.env.REACT_APP_SERVER_URL || "https://saas-workflow-automation-platform-backend.onrender.com", {
   transports: ["websocket", "polling"],
   timeout: 20000,
   reconnection: true,

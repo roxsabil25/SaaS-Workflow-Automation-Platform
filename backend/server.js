@@ -15,6 +15,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 
 
+
 // Ensure local uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -109,6 +110,14 @@ const server = http.createServer(app);
 
 // Serve the ProfileImg folder publicly so uploaded images can be accessed by the frontend
 app.use('/ProfileImg', express.static(path.join(__dirname, '../frontend/public/ProfileImg')));
+
+
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://saas-workflow-automation-platform.onrender.com', // আপনার লাইভ ফ্রন্টএন্ড URL দিন
+  credentials: true // যদি কুকি বা টোকেন ব্যবহার করেন
+}));
 
 // Configure CORS to allow frontend access
 const io = require('socket.io')(server, {
