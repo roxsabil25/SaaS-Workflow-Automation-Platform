@@ -1,0 +1,3276 @@
+/* Toolbar - Fixed at the Top */
+.toolbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 5px;
+  max-height: 55px;
+}
+
+/* Enhanced Editor CSS with Block Support */
+
+/* Main Container - Flexbox layout similar to Ant Design */
+.main-container {
+  display: flex;
+  height: calc(100vh - 60px);
+  flex-wrap: nowrap;
+  overflow: hidden;
+  /* Prevent horizontal scrolling */
+  width: 100%;
+  flex: 1;
+}
+
+/* Content Wrapper - Adjusts automatically based on TOC width */
+.content-container {
+  position: relative;
+  flex: 1;
+  /* Take remaining space after TOC */
+  min-width: 0;
+  /* Allow shrinking */
+  overflow: hidden;
+  /* Prevent overflow */
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+  /* Consistent background */
+}
+
+/* When comments are visible, remove right padding/margin to eliminate gray space */
+.content-container:has(.doc-rail[style*="display: block"]) {
+  padding-right: 0;
+  margin-right: 0;
+}
+
+/* Alternative selector for browsers without :has() support */
+.content-container.comments-active {
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.editor-container {
+  position: relative;
+  flex: 1;
+  padding: 0;
+  /* Remove padding to eliminate gray space */
+  display: flex;
+  justify-content: flex-start;
+  /* Align document to left side */
+  overflow: auto;
+  /* Allow scrolling if needed */
+  height: 100%;
+  background-color: transparent;
+  /* Remove background */
+}
+
+/* Add these styles to your existing Editor.css */
+
+/* Inline Locked Text Styles */
+.locked-text.locked {
+  background: #f7f7f9 !important;
+  border-left: 2px solid #d0d4da !important;
+  padding: 1px 2px !important;
+  border-radius: 2px !important;
+  display: inline !important;
+  contenteditable: false !important;
+  user-select: text !important;
+  cursor: text !important;
+}
+
+.locked-text.locked:hover {
+  background: #f0f0f2 !important;
+}
+
+/* Document Renderer */
+.document-renderer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Align pages to left to minimize background space */
+  gap: 20px;
+  padding: 20px;
+  /* Consistent padding around document */
+  background-color: #f0f2f5;
+  /* Controlled background only around document area */
+  min-height: calc(100vh - 80px);
+  /* Account for toolbar height */
+  width: fit-content;
+  /* Size to document content */
+  margin-left: 20px;
+  /* Default margin from TOC */
+  margin-right: 20px;
+  /* Margin for comments area */
+  transition: margin-left 0.3s ease-in-out;
+  /* Smooth repositioning */
+  max-width: calc(100vw - 300px);
+  /* Ensure document doesn't exceed viewport minus space for sidebars */
+}
+
+/* Dynamic positioning based on TOC state */
+.main-container:has(.toc-sidebar[style*="width: 200px"]) .document-renderer,
+.main-container:has(.toc-sidebar[style*="width: 250px"]) .document-renderer {
+  margin-left: 40px;
+  /* Normal margin when TOC is expanded */
+}
+
+.main-container:has(.toc-sidebar[style*="width: 65px"]) .document-renderer {
+  margin-left: 10px;
+  /* Reduced margin when TOC is collapsed to use freed space without causing overflow */
+}
+
+/* Fallback for browsers without :has() support */
+.document-renderer.toc-expanded {
+  margin-left: 40px;
+}
+
+.document-renderer.toc-collapsed {
+  margin-left: 10px;
+  /* Reduced margin when TOC collapsed, keeps A4 page fully visible */
+}
+
+/* Page Styles */
+.page {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
+  cursor: text;
+  /* Make page area behave like a text surface */
+  /* Make sure page box is the physical paper and doesn't auto-expand */
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  /* header | content | footer */
+  overflow: hidden;
+  /* no spill outside the paper */
+}
+
+.page:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.page.a4 {
+  width: 210mm;
+  min-height: 297mm;
+  max-height: 297mm;
+}
+
+/* Orientation modifiers - Clean centered approach */
+.document-renderer[data-orientation="portrait"] .page {
+  width: 210mm;
+  min-height: 297mm;
+  max-height: 297mm;
+}
+
+.document-renderer[data-orientation="landscape"] .page {
+  width: 297mm;
+  min-height: 210mm;
+  max-height: 210mm;
+}
+
+/* Paper size specific rules */
+.document-renderer[data-paper="a4"][data-orientation="portrait"] .page {
+  width: 210mm;
+  min-height: 297mm;
+  max-height: 297mm;
+}
+
+.document-renderer[data-paper="a4"][data-orientation="landscape"] .page {
+  width: 297mm;
+  min-height: 210mm;
+  max-height: 210mm;
+}
+
+.document-renderer[data-paper="letter"][data-orientation="portrait"] .page {
+  width: 216mm;
+  min-height: 279mm;
+  max-height: 279mm;
+}
+
+.document-renderer[data-paper="letter"][data-orientation="landscape"] .page {
+  width: 279mm;
+  min-height: 216mm;
+  max-height: 216mm;
+}
+
+.document-renderer[data-paper="legal"][data-orientation="portrait"] .page {
+  width: 216mm;
+  min-height: 356mm;
+  max-height: 356mm;
+}
+
+.document-renderer[data-paper="legal"][data-orientation="landscape"] .page {
+  width: 356mm;
+  min-height: 216mm;
+  max-height: 216mm;
+}
+
+.page.letter {
+  width: 216mm;
+  min-height: 279mm;
+  max-height: 279mm;
+}
+
+.page.legal {
+  width: 216mm;
+  min-height: 356mm;
+  max-height: 356mm;
+}
+
+/* Page Content - Strict height enforcement */
+.page-content {
+  padding: 0.5cm 2cm 0.8cm 2cm;
+  /* Reduced top padding from 2cm to 0.5cm */
+  height: 100%;
+  overflow: hidden;
+  /* Critical: prevent any content overflow */
+  position: relative;
+  /* The content height is set by JS (height + max-height).
+     We enforce overflow hidden to prevent content from spilling beyond page boundaries. */
+  min-height: 0;
+  /* important in a grid so height is exactly what we set */
+  box-sizing: border-box;
+  /* Include padding in height calculation */
+}
+
+/* Preserve spaces and line breaks like Google Docs */
+.page-content p,
+.page-content h1,
+.page-content h2,
+.page-content h3,
+.page-content h4,
+.page-content h5,
+.page-content h6,
+.page-content blockquote,
+.page-content pre,
+.page-content li {
+  white-space: pre-wrap;
+  /* preserve spaces & soft line breaks */
+}
+
+/* Keep semantic defaults inside the page, so pasted HTML looks like itself */
+.page .page-content {
+  font: inherit;
+  line-height: inherit;
+}
+
+.page .page-content h1,
+.page .page-content h2,
+.page .page-content h3,
+.page .page-content h4,
+.page .page-content h5,
+.page .page-content h6 {
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0.6em 0 0.4em;
+}
+
+.page .page-content p {
+  margin: 0.6em 0;
+}
+
+.page .page-content ol,
+.page .page-content ul {
+  padding-inline-start: 2rem;
+  margin: 0.6em 0;
+}
+
+.page .page-content blockquote {
+  margin: 0.6em 0;
+  padding-left: 1rem;
+  border-left: 3px solid rgba(0, 0, 0, 0.2);
+}
+
+.page .page-content pre,
+.page .page-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.page .page-content pre {
+  white-space: pre;
+  /* preserve copied indentation exactly */
+  padding: 0.5rem 0.75rem;
+  margin: 0.6em 0;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+/* Tables: keep cells readable without changing pasted structure */
+.page .page-content table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0.6em 0;
+  width: 100%;
+}
+
+.page .page-content th,
+.page .page-content td {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  vertical-align: top;
+}
+
+/* Ensure HTML formatting is preserved and displayed correctly */
+.page-content strong,
+.page-content b {
+  font-weight: bold;
+}
+
+.page-content em,
+.page-content i {
+  font-style: italic;
+}
+
+.page-content u {
+  text-decoration: underline;
+}
+
+.page-content s,
+.page-content strike {
+  text-decoration: line-through;
+}
+
+.page-content sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+
+.page-content sub {
+  vertical-align: sub;
+  font-size: smaller;
+}
+
+.page-content mark {
+  background-color: yellow;
+  color: black;
+}
+
+.page-content code {
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.page-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Page chrome (header/content/footer) with optimized spacing */
+.page {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  /* header | content | footer */
+  gap: 0;
+  /* Remove any gaps between header, content, and footer */
+}
+
+.page-header,
+.page-footer {
+  padding: 0 2cm;
+}
+
+.page-header {
+  min-height: 18mm;
+  /* adjust to your template */
+  display: flex;
+  align-items: flex-end;
+}
+
+.page-footer {
+  min-height: 15mm;
+  /* adjust */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10pt;
+  color: #666;
+}
+
+/* The content area already had padding in your CSS */
+.page-content {
+  overflow: hidden;
+  /* critical: prevent content from peeking under footer */
+  outline: none;
+  /* avoid outline flicker */
+}
+
+/* Avoid accidental scrolling in blocks */
+.block-wrapper [contenteditable="true"] {
+  overflow: visible;
+  max-height: none;
+}
+
+/* Prevent accidental layout shifts from images while loading (optional) */
+.page-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure the content area always has some height to click into */
+.page-content:empty::before {
+  content: "\200B";
+  /* zero-width space so the caret can land inside */
+  display: inline-block;
+}
+
+/* Headers/footers styling - Google Docs style */
+.page-header,
+.page-footer {
+  cursor: text;
+  position: relative;
+  min-height: 20px;
+  padding: 8px 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  /* Prevent margin collapse and allow text selection when editing */
+  display: flow-root;
+  /* Prevent horizontal overflow and force wrapping */
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* When editing header or footer, allow selecting/typing inside */
+.hf-mode--header .page-header,
+.hf-mode--footer .page-footer {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* When not editing, prevent selection for normal browsing */
+.page-header:not(.hf-master):not(.hf-mirror),
+.page-footer:not(.hf-master):not(.hf-mirror) {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Prevent first/last child margins from collapsing out of the chrome */
+.page-header,
+.page-footer {
+  /* flow-root already prevents margin-collapsing, but add padding for visual containment */
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* Zero out default paragraph margins inside header/footer */
+.page-header p:first-child,
+.page-header h1:first-child,
+.page-header h2:first-child,
+.page-header h3:first-child {
+  margin-top: 0;
+}
+
+.page-footer p:last-child {
+  margin-bottom: 0;
+}
+
+/* Pages themselves are never editable */
+.page {
+  -webkit-user-modify: read-only;
+}
+
+.page-header {
+  margin-top: 0;
+  margin-bottom: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  max-height: 2.5em; /* Limit to approx 2 lines */
+  overflow: hidden;
+}
+
+.page-footer {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding-top: 8px;
+  padding-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-footer .footer-left {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.page-footer .footer-right {
+  flex: 1;
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Floating page counter (like Docs, bottom center-ish) */
+.page-counter-chip {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: rgba(32, 33, 36, 0.9);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+/* Optional: hint if a single block is taller than a page */
+.oversized-block {
+  outline: 2px dashed #dc3545;
+}
+
+/* Page numbering */
+.page::after {
+  content: attr(data-page-index);
+  position: absolute;
+  bottom: 1cm;
+  right: 2cm;
+  font-size: 10pt;
+  color: #666;
+  font-family: 'Times New Roman', serif;
+}
+
+/* ToggleLock System Styles */
+
+/* Locked section styles */
+.locked-section {
+  pointer-events: auto;
+  background-color: #f4f4f4;
+  opacity: 0.8;
+  border: 1px dashed #bbb;
+  color: #888;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  padding: 1em;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+/* Editable block styles */
+.editable-block {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  color: #333;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.editable-block:hover {
+  background-color: rgba(0, 123, 255, 0.02);
+}
+
+.editable-block:focus {
+  background-color: rgba(0, 123, 255, 0.05);
+  outline: 2px solid rgba(0, 123, 255, 0.3);
+  outline-offset: 2px;
+}
+
+/* Template content styles */
+.template-content {
+  direction: ltr;
+  unicode-bidi: normal;
+  transform: none;
+}
+
+/* Locked block styles */
+.locked-block {
+  border: 1px dashed #bbb;
+  background-color: #f5f5f5;
+  color: #888;
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  padding: 1em;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.locked-block.header {
+  border-bottom: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.locked-block.footer {
+  border-top: 1px solid #ccc;
+  padding: 8px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Template heading styles */
+.template-heading {
+  font-weight: bold;
+  margin: 1em 0;
+  color: #333;
+}
+
+/* Template editable styles */
+.template-editable {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: 0 1px;
+}
+
+.template-editable:hover {
+  background-color: rgba(40, 167, 69, 0.15);
+  border-color: rgba(40, 167, 69, 0.5);
+}
+
+/* Lock indicator styles */
+.lock-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  z-index: 10;
+}
+
+/* Toggle lock button styles */
+.toggle-lock-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.locked-section:hover .toggle-lock-btn,
+.editable-block:hover .toggle-lock-btn {
+  opacity: 1;
+}
+
+.toggle-lock-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Selection pill styles for floating toolbar */
+.selection-pill {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  z-index: 1500;
+}
+
+.selection-pill button {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  color: #666;
+}
+
+.selection-pill button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.selection-pill button i {
+  font-size: 12px;
+}
+
+/* Block wrapper */
+.block-wrapper {
+  position: relative;
+  margin: 0.5em 0;
+}
+
+/* Block hover effects */
+.block-wrapper:hover {
+  background-color: rgba(0, 123, 255, 0.02);
+  border-radius: 4px;
+}
+
+/* Block selection indicator */
+.block-wrapper.selected {
+  background-color: rgba(0, 123, 255, 0.05);
+  border-radius: 4px;
+  outline: 2px solid rgba(0, 123, 255, 0.3);
+  outline-offset: 2px;
+}
+
+/* Block drag handle */
+.block-wrapper::before {
+  content: "⋮⋮";
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 12px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  line-height: 0.8;
+}
+
+.block-wrapper:hover::before {
+  opacity: 0.6;
+}
+
+.block-wrapper::before:hover {
+  opacity: 1;
+  color: #007bff;
+}
+
+/* Enhanced block styles for page context */
+.page [data-block-id] {
+  position: relative;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px;
+  margin: 0.3em 0;
+}
+
+.page [data-block-id]:focus {
+  outline: none;
+  border-color: rgba(0, 123, 255, 0.3);
+  background-color: rgba(0, 123, 255, 0.02);
+}
+
+.page [data-block-id]:hover {
+  border-color: rgba(0, 123, 255, 0.2);
+}
+
+/* Paragraph blocks in page context */
+.page p[data-block-id] {
+  margin: 0.4em 0;
+  min-height: 1.15em;
+  line-height: 1.15;
+  text-align: justify;
+}
+
+.page p[data-block-id]:empty:first-child:last-child::before {
+  content: "Type here...";
+  color: #999;
+  font-style: italic;
+}
+
+/* Heading blocks in page context */
+.page h1[data-block-id] {
+  font-size: 2.2em;
+  font-weight: bold;
+  margin: 1.5em 0 1em 0;
+  color: #222;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 0.3em;
+}
+
+.page h2[data-block-id] {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 1.3em 0 0.8em 0;
+  color: #333;
+  border-bottom: 2px solid #6c757d;
+  padding-bottom: 0.2em;
+}
+
+.page h3[data-block-id] {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 1.1em 0 0.6em 0;
+  color: #444;
+}
+
+.page h4[data-block-id] {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 1em 0 0.5em 0;
+  color: #555;
+}
+
+.page h5[data-block-id] {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0.9em 0 0.4em 0;
+  color: #666;
+}
+
+.page h6[data-block-id] {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0.8em 0 0.3em 0;
+  color: #777;
+}
+
+/* List blocks in page context with better pagination */
+.page ul[data-block-id],
+.page ol[data-block-id] {
+  margin: 0.5em 0;
+  /* Reduced margin for better pagination */
+  padding-left: 1.5em;
+  break-inside: avoid;
+  /* Try to keep list items together */
+}
+
+.page ul[data-block-id] li {
+  list-style-type: disc;
+  margin: 0.4em 0;
+  line-height: 1.4;
+}
+
+.page ol.custom-numbered-list {
+  counter-reset: item;
+  list-style: none;
+  padding-left: 0;
+}
+
+.page ol.custom-numbered-list li {
+  counter-increment: item;
+  margin: 0.4em 0;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.page ol.custom-numbered-list li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Quote blocks in page context */
+.page blockquote[data-block-id] {
+  margin: 1.5em 0;
+  padding: 1.2em 1.5em;
+  border-left: 4px solid #007bff;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+  font-style: italic;
+  color: #495057;
+  position: relative;
+}
+
+.page blockquote[data-block-id]::before {
+  content: "\201C";
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 3em;
+  color: #007bff;
+  opacity: 0.3;
+}
+
+.page blockquote[data-block-id]::after {
+  content: "\201D";
+  position: absolute;
+  bottom: -10px;
+  right: 10px;
+  font-size: 3em;
+  color: #007bff;
+  opacity: 0.3;
+}
+
+/* Code blocks in page context */
+.page pre[data-block-id] {
+  margin: 1.5em 0;
+  padding: 1.2em;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+
+.page pre[data-block-id]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Table blocks in page context with strict height enforcement */
+.page table[data-block-id] {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  /* Reduced margin for better pagination */
+  font-size: 0.95em;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
+  /* Ensure consistent table sizing */
+  max-height: none;
+  /* Let pagination handle height limits */
+  /* Screen: allow our manual paginator to split/clone tables by rows */
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+/* Table rows should allow splitting during screen pagination */
+.page table[data-block-id] tr {
+  break-inside: auto;
+  page-break-inside: auto;
+  display: table-row;
+}
+
+/* Table cells should allow splitting during screen pagination */
+.page table[data-block-id] td,
+.page table[data-block-id] th {
+  break-inside: auto;
+  page-break-inside: auto;
+  vertical-align: top;
+}
+
+.page table[data-block-id] th,
+.page table[data-block-id] td {
+  padding: 0.8em;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.page table[data-block-id] th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.page table[data-block-id] tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Image blocks in page context */
+.page img[data-block-id] {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em 0;
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.page img[data-block-id]:hover {
+  transform: scale(1.02);
+}
+
+/* Google Docs-style image blocks */
+figure.img-block {
+  display: block;
+  width: fit-content;
+  margin: 8px 0;
+  margin-right: auto;
+  position: relative;
+  outline: none;
+  border-radius: 4px;
+  transition: box-shadow 0.2s ease, margin 0.15s ease;
+  max-width: 100%;
+  line-height: 0;
+}
+
+/* ---- Alignment via data-align attribute ---- */
+figure.img-block[data-align="left"] {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+figure.img-block[data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figure.img-block[data-align="right"] {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+figure.img-block:hover {
+  box-shadow: 0 0 0 2px rgba(76, 159, 254, 0.4);
+}
+
+figure.img-block.selected {
+  box-shadow: 0 0 0 2px #4c9ffe;
+  background-color: rgba(76, 159, 254, 0.05);
+  cursor: move;
+}
+
+figure.img-block>img {
+  max-width: 100%;
+  display: block;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* ---- Resize handles: 4 corners + 4 edges ---- */
+figure.img-block .img-resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #4c9ffe;
+  border-radius: 50%;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+/* Show handles on hover and selection */
+figure.img-block:hover .img-resize-handle,
+figure.img-block.selected .img-resize-handle {
+  opacity: 1;
+}
+
+/* Handle hover effect */
+figure.img-block .img-resize-handle:hover {
+  background: #4c9ffe;
+  transform: scale(1.3);
+}
+
+/* -- Corner handles -- */
+figure.img-block .img-resize-handle[data-resize="nw"] {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="ne"] {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="se"] {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="sw"] {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+/* -- Edge handles -- */
+figure.img-block .img-resize-handle[data-resize="n"] {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="s"] {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="e"] {
+  top: 50%;
+  right: -5px;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+figure.img-block .img-resize-handle[data-resize="w"] {
+  top: 50%;
+  left: -5px;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+/* Keep hover scale without overriding edge transforms */
+figure.img-block .img-resize-handle[data-resize="n"]:hover,
+figure.img-block .img-resize-handle[data-resize="s"]:hover {
+  transform: translateX(-50%) scale(1.3);
+}
+
+figure.img-block .img-resize-handle[data-resize="e"]:hover,
+figure.img-block .img-resize-handle[data-resize="w"]:hover {
+  transform: translateY(-50%) scale(1.3);
+}
+
+/* Prevent cursor flicker during active resize */
+figure.img-block.resizing .img-resize-handle {
+  opacity: 1;
+}
+
+/* Drag-to-reposition visual feedback */
+figure.img-block.dragging {
+  opacity: 0.8;
+  z-index: 100;
+  cursor: move;
+}
+
+/* Image loading states */
+figure.img-block.loading {
+  background: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+figure.img-block.loading::after {
+  content: "Loading image...";
+  color: #6c757d;
+  font-size: 14px;
+}
+
+figure.img-block.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+figure.img-block.error::after {
+  content: "Failed to load image";
+  color: #721c24;
+  font-size: 14px;
+}
+
+/* Divider blocks in page context */
+.page hr[data-block-id] {
+  margin: 2em 0;
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #007bff, transparent);
+  opacity: 0.6;
+}
+
+/* Page break simulation */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+/* Print: keep tables intact if the printer handles pagination */
+@media print {
+
+  .page table[data-block-id],
+  .page table[data-block-id] tr,
+  .page table[data-block-id] td,
+  .page table[data-block-id] th {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* Responsive design for pages */
+@media (max-width: 768px) {
+  .document-renderer {
+    padding: 10px;
+  }
+
+  .page {
+    transform: scale(0.8);
+    transform-origin: top center;
+    margin-bottom: 10px;
+  }
+
+  .page-content {
+    padding: 1cm;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    transform: scale(0.6);
+    margin-bottom: 0;
+  }
+
+  .page-content {
+    padding: 0.5cm;
+  }
+}
+
+/* Print styles for pages */
+@media print {
+  .document-renderer {
+    background: none;
+    padding: 0;
+    gap: 0;
+  }
+
+  .page {
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+    page-break-after: always;
+  }
+
+  .page:last-child {
+    page-break-after: avoid;
+  }
+
+  .page-content {
+    padding: 0;
+  }
+
+  .block-wrapper::before {
+    display: none;
+  }
+
+  .page [data-block-id] {
+    border: none;
+    background: none;
+  }
+
+  .page [data-block-id]:focus,
+  .page [data-block-id]:hover {
+    border: none;
+    background: none;
+  }
+}
+
+/* Animation for new blocks */
+@keyframes slideInBlock {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.block-wrapper.new-block {
+  animation: slideInBlock 0.3s ease-out;
+}
+
+/* Loading states */
+.page.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.page.loading::after {
+  content: "Loading...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1em 2em;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Text Editor Base Styles */
+.text-editor {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 2cm;
+  border: 1px solid #ddd;
+  background: white;
+  outline: none;
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  color: #333;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+/* Placeholder styling */
+.text-editor:empty:before {
+  content: attr(data-placeholder);
+  color: #999;
+  font-style: italic;
+  position: absolute;
+  top: 2cm;
+  left: 2cm;
+  pointer-events: none;
+}
+
+/* Text Editor Dynamic Sizes */
+.text-editor.a4 {
+  width: 210mm;
+  min-height: 297mm;
+}
+
+.text-editor.letter {
+  width: 216mm;
+  min-height: 279mm;
+}
+
+.text-editor.legal {
+  width: 216mm;
+  min-height: 356mm;
+}
+
+/* Block-specific styles */
+.text-editor [data-block-id] {
+  position: relative;
+  margin: 0.5em 0;
+  transition: all 0.2s ease;
+}
+
+.text-editor [data-block-id]:hover {
+  background-color: rgba(0, 123, 255, 0.03);
+  border-radius: 4px;
+}
+
+.text-editor [data-block-id]:focus {
+  outline: none;
+  background-color: rgba(0, 123, 255, 0.05);
+  border-radius: 4px;
+}
+
+/* Paragraph blocks */
+.text-editor p[data-block-id] {
+  margin: 1em 0;
+  min-height: 1.5em;
+  text-align: justify;
+}
+
+.text-editor p[data-block-id]:empty {
+  min-height: 1.5em;
+}
+
+.text-editor p[data-block-id]:empty:before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 1.5em;
+  opacity: 0;
+}
+
+/* Heading blocks */
+.text-editor h1[data-block-id] {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 1.5em 0 1em 0;
+  color: #222;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.3em;
+}
+
+.text-editor h2[data-block-id] {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 1.3em 0 0.8em 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.2em;
+}
+
+.text-editor h3[data-block-id] {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 1.1em 0 0.6em 0;
+  color: #444;
+}
+
+.text-editor h4[data-block-id] {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 1em 0 0.5em 0;
+  color: #555;
+}
+
+.text-editor h5[data-block-id] {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0.9em 0 0.4em 0;
+  color: #666;
+}
+
+.text-editor h6[data-block-id] {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin: 0.8em 0 0.3em 0;
+  color: #777;
+}
+
+/* List blocks */
+.text-editor ul[data-block-id],
+.text-editor ol[data-block-id] {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.text-editor ul[data-block-id] li {
+  list-style-type: disc;
+  margin: 0.3em 0;
+}
+
+.text-editor ul[data-block-id] ul li {
+  list-style-type: circle;
+}
+
+.text-editor ul[data-block-id] ul ul li {
+  list-style-type: square;
+}
+
+/* Custom numbered lists */
+.text-editor ol.custom-numbered-list {
+  counter-reset: item;
+  padding-left: 2em;
+}
+
+.text-editor ol.custom-numbered-list li {
+  display: block;
+  margin: 0.3em 0;
+  counter-increment: item;
+}
+
+.text-editor ol.custom-numbered-list li:before {
+  content: counter(item) ". ";
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+
+.text-editor ol.custom-numbered-list ol {
+  counter-reset: subitem;
+  padding-left: 1.5em;
+}
+
+.text-editor ol.custom-numbered-list ol li:before {
+  content: counter(item) "." counter(subitem) " ";
+  counter-increment: subitem;
+}
+
+/* Quote blocks */
+.text-editor blockquote[data-block-id] {
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  border-left: 4px solid #007bff;
+  background-color: #f8f9fa;
+  font-style: italic;
+  color: #666;
+}
+
+.text-editor blockquote[data-block-id]:before {
+  content: "\201C";
+  font-size: 2em;
+  color: #007bff;
+  vertical-align: top;
+  line-height: 0.5;
+  margin-right: 0.2em;
+}
+
+.text-editor blockquote[data-block-id]:after {
+  content: "\201D";
+  font-size: 2em;
+  color: #007bff;
+  vertical-align: bottom;
+  line-height: 0.5;
+  margin-left: 0.2em;
+}
+
+/* Code blocks */
+.text-editor pre[data-block-id] {
+  margin: 1.5em 0;
+  padding: 1em;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.text-editor pre[data-block-id] code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* Table blocks */
+.text-editor table[data-block-id] {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+}
+
+.text-editor table[data-block-id] th,
+.text-editor table[data-block-id] td {
+  padding: 0.75em;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.text-editor table[data-block-id] th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #495057;
+}
+
+.text-editor table[data-block-id] tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.text-editor table[data-block-id] tr:hover {
+  background-color: #e9ecef;
+}
+
+/* Image blocks */
+.text-editor img[data-block-id] {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em 0;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Divider blocks */
+.text-editor hr[data-block-id] {
+  margin: 2em 0;
+  border: none;
+  border-top: 2px solid #dee2e6;
+  opacity: 0.5;
+}
+
+/* Block selection and editing states */
+.text-editor [data-block-id].block-selected {
+  background-color: rgba(0, 123, 255, 0.1);
+  border-radius: 4px;
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.text-editor [data-block-id].block-editing {
+  background-color: rgba(40, 167, 69, 0.05);
+  border-radius: 4px;
+}
+
+/* Block handles for drag and drop (future enhancement) */
+.text-editor [data-block-id]:hover:before {
+  content: "⋮⋮";
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 1.2em;
+  cursor: grab;
+  line-height: 0.8;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.text-editor [data-block-id]:hover:before:hover {
+  opacity: 1;
+  color: #007bff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .text-editor {
+    width: 100%;
+    min-width: auto;
+    margin: 0;
+    padding: 1cm;
+  }
+
+  .text-editor.a4,
+  .text-editor.letter,
+  .text-editor.legal {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .editor-container {
+    padding: 10px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .text-editor {
+    box-shadow: none;
+    border: none;
+    background: white;
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .text-editor [data-block-id]:hover:before {
+    display: none;
+  }
+
+  .text-editor [data-block-id]:hover {
+    background-color: transparent;
+  }
+
+  .text-editor [data-block-id]:focus {
+    background-color: transparent;
+    outline: none;
+  }
+}
+
+/* Animation for new blocks */
+@keyframes fadeInBlock {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.text-editor [data-block-id].new-block {
+  animation: fadeInBlock 0.3s ease-out;
+}
+
+/* Focus styles for better accessibility */
+.text-editor [data-block-id]:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Typing indicator */
+.text-editor.typing {
+  position: relative;
+}
+
+.text-editor.typing:after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: #28a745;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Error states */
+.text-editor [data-block-id].error {
+  border-left: 4px solid #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Success states */
+.text-editor [data-block-id].success {
+  border-left: 4px solid #28a745;
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+/* Warning states */
+.text-editor [data-block-id].warning {
+  border-left: 4px solid #ffc107;
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+/* Table of Contents (TOC) - Dashboard Sidebar Style */
+.toc-sidebar {
+  position: relative;
+  background: #f9f9f9;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+  transition: width 0.3s ease-in-out;
+  flex-shrink: 0;
+  /* Don't shrink in flex container */
+  height: 100%;
+}
+
+/* Expanded state - like dashboard sidebar expanded */
+.toc-sidebar {
+  width: 250px;
+  padding: 15px;
+}
+
+/* Collapsed state - like dashboard sidebar collapsed */
+.toc-sidebar[style*="width: 65px"] {
+  width: 65px !important;
+  padding: 8px 4px;
+  border-radius: 0;
+}
+
+/* Hide title when collapsed, center toggle button */
+.toc-sidebar[style*="width: 65px"] .toc-toggle {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100%;
+  text-align: center;
+}
+
+/* Center icon in collapsed state */
+.toc-sidebar[style*="width: 65px"] .toc-icon {
+  margin-top: 20px;
+}
+
+/* Alternative selector for collapsed state */
+.toc-sidebar.toc-collapsed {
+  width: 65px;
+  padding: 8px 4px;
+  border-radius: 0;
+}
+
+/* TOC Scrollable Content */
+.toc-scroll {
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.toc-title {
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Empty TOC Message */
+.toc-empty {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* TOC List Items */
+.toc-item {
+  margin-bottom: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* TOC Links */
+.toc-link {
+  text-decoration: none !important;
+  /* Removes underline */
+  color: #333;
+  /* Adjust color as needed */
+  display: block;
+  padding: 5px 0;
+}
+
+.toc-link:hover {
+  color: #007bff;
+  /* Change color on hover */
+}
+
+/* Smooth Scroll Effect */
+html {
+  scroll-behavior: smooth;
+}
+
+.highlighted-text {
+  position: relative;
+  border-radius: 3px;
+}
+
+button.floating-collapse-btn {
+  color: black !important;
+  background-color: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+button.floating-collapse-btn:hover {
+  background-color: #e9ecef !important;
+}
+
+/* For the comment and suggested edit textareas */
+.item-input .form-control {
+  font-size: 13px;
+}
+
+/* For the reply input fields */
+.floating-comment .form-control,
+.floating-suggestededit .form-control {
+  font-size: 13px;
+}
+
+/* For buttons inside floating elements */
+.item-input .btn,
+.floating-comment .btn,
+.floating-suggestededit .btn {
+  font-size: 13px;
+}
+
+.quick-access-toolbar {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 500;
+}
+
+.toolbar-btn {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Delete Button */
+.delete-floating-item {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #dc3545;
+  padding: 2px 5px;
+  border-radius: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.delete-floating-item:hover {
+  opacity: 1;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+/* Floating Elements */
+.floating-comment,
+.floating-suggestededit {
+  position: absolute;
+  background: white;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: pointer;
+  font-size: 13px;
+  /* Added this line */
+}
+
+/* Input Fields */
+.item-input {
+  position: absolute;
+  background: white;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  /* Added this line */
+}
+
+.floating-item {
+  border-left: 3px solid #28a745;
+  padding-left: 10px;
+  margin-bottom: 8px;
+  word-break: break-word;
+  /* Force break long words */
+  overflow-wrap: break-word;
+  /* Alternate for word-wrap */
+  font-size: 13px;
+  /* Added this line */
+}
+
+.badge-ellipsis {
+  font-weight: normal;
+  white-space: nowrap;
+  /* Prevent text from wrapping */
+  overflow: hidden;
+  /* Hide overflowing content */
+  text-overflow: ellipsis;
+  /* Display ellipsis */
+  max-width: 270px;
+  /* Set a maximum width (adjust as needed) */
+  display: inline-block;
+  /* allows max-width to work */
+  font-size: 12px;
+  /* Added this line */
+}
+
+.highlighted-active {
+  background-color: yellow !important;
+  transition: background-color 0.3s ease;
+}
+
+.comment-active {
+  background-color: rgba(255, 215, 0, 0.3);
+  border-left: 3px solid gold;
+  transition: background-color 0.3s ease;
+}
+
+/* ===== Google Docs-like overrides ===== */
+:root {
+  --doc-margin: 2.54cm;
+  /* 1 inch */
+  --doc-header: 15mm;
+  /* Reduced header space */
+  --doc-footer: 18mm;
+  /* Increased footer space for better content utilization */
+}
+
+/* Fixed paper box – a physical A4 sheet */
+.page.a4 {
+  width: 210mm;
+  height: 297mm;
+  min-height: auto;
+  max-height: none;
+}
+
+.page.a4.portrait {
+  width: 210mm;
+  height: 297mm;
+}
+
+.page.a4.landscape {
+  width: 297mm;
+  height: 210mm;
+}
+
+/* Reserve header/footer and make footer visible */
+.page-header {
+  margin-top: 5mm;
+  /* Reduced spacing for template editor */
+  min-height: 8mm;
+  /* Much smaller height */
+  padding: 1mm var(--doc-margin);
+  /* Minimal padding */
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Header text styling for editable content */
+.page-header .header-text-content {
+  flex: 1;
+  min-height: 1em;
+  outline: none;
+  font-size: 11pt;
+  line-height: 1.15;
+  color: #333;
+  cursor: text;
+  margin-left: 8px;
+}
+
+/* Template editor specific header styling */
+.template-container .page-header {
+  margin-top: 1mm;
+  /* Very compact for template editor */
+  min-height: 5mm;
+  /* Much smaller height - just enough for text */
+  max-height: 8mm;
+  /* Prevent header from expanding too much */
+  padding: 1mm var(--doc-margin);
+  /* Minimal padding */
+  line-height: 1.2;
+  /* Tighter line height */
+  overflow: hidden;
+  /* Prevent content overflow */
+  flex-shrink: 0;
+  /* Don't shrink in grid */
+}
+
+.template-container .page-content {
+  padding: 0.1cm var(--doc-margin) var(--doc-margin) var(--doc-margin);
+  /* Very minimal top padding for template editor */
+}
+
+/* Additional spacing optimization for template creation interface */
+.create-template-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.create-template-tabs .ant-row {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.create-template-tabs .ant-col {
+  padding-top: 0 !important;
+}
+
+.create-template-tabs .ant-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.create-template-tabs .ant-tabs-nav {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  background-color: #f0f2f5;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+  /* Remove border to merge with toolbar */
+}
+
+/* Remove the line under the tabs */
+.create-template-tabs .ant-tabs-nav::before {
+  display: none !important;
+}
+
+.create-template-tabs .ant-tabs-tab {
+  margin-top: 0 !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.create-template-tabs .ant-tabs-content-holder {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.create-template-tabs .ant-tabs-content {
+  padding-top: 0 !important;
+}
+
+.create-template-tabs .ant-tabs-tabpane {
+  padding-top: 0 !important;
+}
+
+/* Minimize spacing between tabs and editor toolbar */
+/* Minimize spacing between tabs and editor toolbar */
+.template-container {
+  margin-top: -8px !important;
+  /* Pull up further to ensure no gap */
+  padding-top: 0 !important;
+}
+
+/* Optimize editor toolbar spacing — merged with the tab bar */
+.editor-toolbar {
+  position: sticky;
+  top: 36px;
+  /* Further reduced to 36px to match tab height */
+  z-index: 100;
+  background-color: #f8f9fa;
+  border-top: none !important;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Remove any default spacing from the parent container */
+body .create-template-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Ensure tabs are flush with top */
+.ant-layout-content .create-template-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Remove spacing from dashboard or parent containers */
+.dashboard-content .create-template-tabs,
+.main-content .create-template-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Target parent divs and any wrapping elements */
+.ant-layout-content>div:has(.create-template-tabs) {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Remove spacing from the immediate parent container */
+div:has(> .create-template-tabs) {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Force removal of any inherited spacing */
+.create-template-tabs * {
+  margin-top: 0 !important;
+}
+
+/* Override any Ant Design default spacing for tab components */
+.ant-tabs-top>.ant-tabs-nav {
+  margin-bottom: 8px !important;
+}
+
+.ant-tabs-top>.ant-tabs-nav::before {
+  margin-bottom: 0 !important;
+}
+
+/* Ensure no spacing between header and tabs */
+.ant-layout-header+* .create-template-tabs {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* When header is in edit mode */
+.page-header[contenteditable="true"] {
+  background-color: #f8f9fa;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.page-header[contenteditable="true"] .header-text-content {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.page-footer {
+  margin-bottom: 16mm;
+  /* Google Docs-style spacing - lifted above page edge */
+  min-height: var(--doc-footer);
+  max-height: calc(var(--doc-footer) + 10mm);
+  padding: 4mm var(--doc-margin);
+  /* Increased padding for taller/more spacious footer */
+  font-size: 9pt;
+  /* Slightly smaller font */
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2;
+  /* Tighter line height */
+  overflow: hidden;
+}
+
+.page-footer [data-page-num] {
+  font-weight: bold;
+}
+
+/* Content area = Google Docs defaults with strict height enforcement */
+.page-content {
+  padding: 0.3cm var(--doc-margin) 0.8cm var(--doc-margin);
+  /* Further reduced top padding */
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 11pt;
+  line-height: 1.15;
+  overflow: hidden;
+  /* Critical: prevent any content overflow beyond page boundaries */
+  white-space: normal;
+  /* paragraphs behave like Google Docs */
+  box-sizing: border-box;
+  /* Include padding in height calculation */
+  min-height: 0;
+  /* grid child fix */
+  contain: layout paint;
+  /* prevents stray overflow/margin collapse */
+  position: relative;
+  /* Ensure proper positioning for overflow detection */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* Always align content to the top */
+}
+
+/* Fix for last page and all page content positioning */
+.page-content>*:first-child {
+  margin-top: 0 !important;
+  /* Remove any top margin from first element */
+}
+
+/* Ensure all content blocks start from top */
+.page-content [data-block-id]:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Fix spacing for content blocks */
+.page-content [data-block-id] {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.page-content [data-block-id]:first-child {
+  margin-top: 0 !important;
+  /* First block should have no top margin */
+}
+
+/* Content overflow indicator removed - no more yellow warning banner */
+
+/* Neutral blocks (Google Docs-like) */
+.page [data-block-id] {
+  margin: 0.4em 0;
+  border: 0;
+  padding: 0;
+}
+
+.page p[data-block-id] {
+  margin: 0.5em 0;
+  line-height: 1.15;
+  text-align: left;
+  /* don't justify by default */
+}
+
+/* Headings – remove decorative borders, use sane sizes/margins */
+.page h1[data-block-id] {
+  font-size: 2rem;
+  margin: 0.67em 0;
+  font-weight: 700;
+  border: 0;
+  color: #222;
+}
+
+.page h2[data-block-id] {
+  font-size: 1.5rem;
+  margin: 0.83em 0;
+  font-weight: 700;
+  border: 0;
+  color: #333;
+}
+
+.page h3[data-block-id] {
+  font-size: 1.25rem;
+  margin: 0.9em 0;
+  font-weight: 700;
+  border: 0;
+  color: #444;
+}
+
+.page h4[data-block-id] {
+  font-size: 1.1rem;
+  margin: 1em 0 0.6em;
+  border: 0;
+  color: #555;
+}
+
+.page h5[data-block-id] {
+  font-size: 1rem;
+  margin: 1em 0 0.5em;
+  border: 0;
+  color: #666;
+}
+
+.page h6[data-block-id] {
+  font-size: .9rem;
+  margin: 1em 0 0.4em;
+  border: 0;
+  color: #777;
+}
+
+/* Lists and tables: compact like Google Docs */
+.page .page-content ol,
+.page .page-content ul {
+  padding-inline-start: 2rem;
+  margin: 0.5em 0;
+}
+
+.page .page-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.page .page-content th,
+.page .page-content td {
+  border: 1px solid rgba(0, 0, 0, .15);
+  padding: .35rem .5rem;
+  vertical-align: top;
+}
+
+/* Code blocks keep exact whitespace */
+.page .page-content pre {
+  white-space: pre;
+  margin: 0.5em 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* Superscripts/subscripts (equations, "raised to power") */
+.page-content sup {
+  vertical-align: super;
+  font-size: 0.8em;
+}
+
+.page-content sub {
+  vertical-align: sub;
+  font-size: 0.8em;
+}
+
+/* Optional: MathML looks better with a math-capable font */
+.page-content math {
+  font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+}
+
+/* Blockquotes - Google Docs style */
+.page blockquote[data-block-id] {
+  margin: 0.5em 0;
+  padding: 0.5em 1em;
+  border-left: 3px solid #007bff;
+  background: #f8f9fa;
+  font-style: italic;
+  color: #495057;
+}
+
+/* Ensure proper spacing for all block types */
+.page ul[data-block-id] li,
+.page ol[data-block-id] li {
+  margin: 0.2em 0;
+  line-height: 1.15;
+}
+
+/* Table styling improvements */
+.page table[data-block-id] {
+  margin: 0.5em 0;
+  font-size: 0.95em;
+}
+
+.page table[data-block-id] th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.page table[data-block-id] tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Comment and Edit Functionality Styles */
+
+/* Highlighted text for comments and suggested edits */
+.highlighted-text {
+  position: relative;
+  border-radius: 3px;
+  padding: 1px 2px;
+  margin: 0 1px;
+  transition: all 0.2s ease;
+}
+
+.highlighted-text:hover {
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+/* Comment highlights */
+[data-comment-id] {
+  background-color: rgba(40, 167, 69, 0.2) !important;
+  border-bottom: 2px solid #28a745;
+}
+
+/* Suggested edit highlights */
+[data-suggestededit-id] {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Suggested edit del/ins tags */
+del {
+  background-color: rgba(220, 53, 69, 0.2);
+  text-decoration: line-through;
+  color: #dc3545;
+}
+
+ins {
+  background-color: rgba(40, 167, 69, 0.2);
+  text-decoration: underline;
+  color: #28a745;
+}
+
+/* Floating elements container */
+.floating-elements-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+}
+
+/* Floating comment and suggested edit cards */
+.floating-comment,
+.floating-suggested-edit {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.floating-comment:hover,
+.floating-suggested-edit:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Active state for floating elements */
+.floating-comment[style*="lightyellow"],
+.floating-suggested-edit[style*="lightyellow"] {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+}
+
+/* Comment input modal */
+.comment-input-modal,
+.suggest-edit-input-modal {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+/* Quick access toolbar */
+.quick-access-toolbar {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar-btn {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-btn:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.toolbar-btn:active {
+  transform: translateY(1px);
+}
+
+/* Badge styles for selected text */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+  color: white;
+}
+
+.badge.bg-primary {
+  background-color: #007bff !important;
+  color: white;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+  color: white;
+}
+
+/* Status badges for suggested edits */
+.floating-suggested-edit .badge {
+  margin-right: 8px;
+}
+
+/* Delete button for floating elements */
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+  background: transparent;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Reply section */
+.reply-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.reply-item {
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.reply-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Form controls in floating elements */
+.floating-comment .form-control,
+.floating-suggested-edit .form-control,
+.comment-input-modal .form-control,
+.suggest-edit-input-modal .form-control {
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.floating-comment .form-control:focus,
+.floating-suggested-edit .form-control:focus,
+.comment-input-modal .form-control:focus,
+.suggest-edit-input-modal .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Button styles in floating elements */
+.floating-comment .btn,
+.floating-suggested-edit .btn,
+.comment-input-modal .btn,
+.suggest-edit-input-modal .btn {
+  font-size: 0.875rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Action buttons for suggested edits */
+.floating-suggested-edit .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.floating-suggested-edit .btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.floating-suggested-edit .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.floating-suggested-edit .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .floating-elements-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-height: 300px;
+  }
+
+  .comment-input-modal,
+  .suggest-edit-input-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .quick-access-toolbar {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .toolbar-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Hide rail on very small screens to prevent overlap */
+  .doc-rail {
+    display: none;
+  }
+}
+
+/* Medium screens - adjust rail positioning */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .doc-rail {
+    margin-left: 10px;
+    /* Reduce spacing on medium screens */
+  }
+
+  /* Medium screens - adjust for centered layout */
+  .toc-sidebar {
+    width: 220px;
+    /* Slightly smaller on medium screens */
+  }
+
+  .toc-sidebar[style*="width: 65px"] {
+    width: 60px !important;
+    /* Smaller collapsed width on medium screens */
+  }
+}
+
+/* Small screens - mobile-friendly adjustments */
+@media (max-width: 768px) {
+
+  /* Hide doc-rail on very small screens to prevent overlap */
+  .doc-rail {
+    display: none;
+  }
+
+  /* Adjust TOC for small screens */
+  .toc-sidebar {
+    width: 200px;
+  }
+
+  .toc-sidebar[style*="width: 65px"] {
+    width: 50px !important;
+    /* Very compact on mobile */
+  }
+
+  /* Make main container stack vertically on very small screens */
+  .main-container {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+/* Animation for new floating elements */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.floating-comment,
+.floating-suggested-edit {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+/* Scrollbar styling for floating elements container */
+.floating-elements-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.floating-elements-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.floating-elements-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.floating-elements-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* ===== TOC Collapse/Expand Transitions ===== */
+/* Transition is already defined in the main .toc-sidebar rule above */
+
+/* Enhanced comment rail styling for better integration */
+.doc-rail__card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+/* When comments are active and TOC is collapsed, eliminate right-side gray space */
+.content-container.comments-active.toc-collapsed,
+.content-container:has(.document-renderer.toc-collapsed):has(.doc-rail[style*="display: block"]) {
+  background: transparent;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+/* Make comment rail extend to fill available space when TOC is collapsed */
+.doc-rail.extended {
+  background: #f0f2f5;
+  /* Match container background */
+  padding-right: 4px;
+  /* Small right padding to prevent edge touch */
+  margin-right: 8px;
+  /* Margin to prevent overflow */
+  border-radius: 0 4px 4px 0;
+  /* Small right border radius */
+  max-width: calc(100vw - 300px);
+  /* Prevent rail from exceeding viewport */
+}
+
+/* When TOC collapsed, remove right border radius from rail cards to connect with edge */
+.doc-rail.extended .doc-rail__card:last-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+}
+
+.doc-rail__card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #d0d0d0;
+}
+
+.doc-rail__composer {
+  border-color: #007bff;
+  background: #f8f9ff;
+}
+
+.doc-rail__chip {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  color: #1976d2;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* ===== Docs-like selection pill (small icons) ===== */
+.selection-pill {
+  position: absolute;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 6px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+  width: 32px;
+  align-items: center;
+}
+
+.selection-pill button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  transition: background .15s ease;
+  cursor: pointer;
+}
+
+.selection-pill button:hover {
+  background: #f4f4f4;
+}
+
+.selection-pill i {
+  font-size: 14px;
+}
+
+/* ===== Right comment rail (docks in page gutter) ===== */
+.doc-rail {
+  position: absolute;
+  /* relative to the scrolling editor container */
+  top: 0;
+  /* left set in JS */
+  /* width set in JS */
+  height: 100%;
+  padding: 8px 6px 60px 8px;
+  /* Reduced padding for more compact layout */
+  overflow: auto;
+  z-index: 1100;
+  pointer-events: auto;
+  background: #f8f9fa;
+  border-left: 2px solid #e6e6e6;
+  border-radius: 0 6px 6px 0;
+  /* Smaller border radius */
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  margin-left: 8px;
+  /* Further reduced margin */
+  margin-right: 8px;
+  /* Add right margin to prevent overflow */
+  box-sizing: border-box;
+  /* Include padding in width calculation */
+}
+
+/* Ensure rail doesn't interfere with main editor */
+.doc-rail * {
+  pointer-events: auto;
+}
+
+/* Fix button interactions */
+.doc-rail button {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.doc-rail button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.doc-rail__card {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 8px;
+  /* Reduced padding */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  margin-bottom: 8px;
+  /* Reduced margin */
+  font-size: 13px;
+  /* Smaller font size */
+  min-height: auto;
+  /* Allow vertical expansion */
+  height: auto;
+  /* Auto height for content */
+  overflow-wrap: break-word;
+  /* Break long words */
+  word-wrap: break-word;
+  /* Legacy support */
+  white-space: pre-wrap;
+  /* Preserve line breaks */
+}
+
+/* Better text content styling */
+.doc-rail__card>div {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.doc-rail__composer .form-control {
+  font-size: 14px;
+}
+
+.doc-rail__chip {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  background: #f1f5ff;
+  color: #275efe;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  border: 1px solid #dbe4ff;
+  font-size: 11px;
+}
+
+/* Enhanced rail composer styles */
+.doc-rail__composer {
+  background: #fff;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  padding: 8px;
+  /* Reduced padding */
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
+  margin-bottom: 8px;
+  /* Reduced margin */
+  position: relative;
+}
+
+.doc-rail__composer .form-control {
+  font-size: 12px;
+  /* Smaller font */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 50px;
+  /* Minimum height */
+  max-height: 150px;
+  /* Allow expansion up to reasonable limit */
+  height: auto;
+  /* Auto height based on content */
+  padding: 6px 8px;
+  /* Reduced padding */
+  line-height: 1.3;
+  cursor: text;
+  overflow-y: auto;
+  /* Scroll if content exceeds max-height */
+}
+
+.doc-rail__composer .form-control:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.25);
+  outline: none;
+  cursor: text;
+}
+
+/* Fix cursor positioning in textareas */
+.doc-rail textarea {
+  cursor: text !important;
+  caret-color: #333;
+}
+
+.doc-rail textarea:focus {
+  cursor: text !important;
+}
+
+/* Reply section styles */
+.reply-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.reply-item {
+  margin-bottom: 6px;
+  /* Reduced margin */
+  padding: 6px;
+  /* Reduced padding */
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 11px;
+  /* Smaller font */
+  line-height: 1.3;
+  min-height: auto;
+  /* Allow vertical expansion */
+  height: auto;
+  /* Auto height for content */
+  overflow-wrap: break-word;
+  /* Break long words */
+  word-wrap: break-word;
+  /* Legacy support */
+}
+
+.reply-item strong {
+  color: #4285f4;
+  margin-right: 4px;
+}
+
+/* Button styles for rail */
+.doc-rail__card .btn {
+  font-size: 11px;
+  /* Smaller font */
+  padding: 3px 6px;
+  /* Reduced padding */
+  border-radius: 3px;
+  line-height: 1.2;
+}
+
+.doc-rail__card .btn-sm {
+  font-size: 10px;
+  /* Smaller font */
+  padding: 2px 4px;
+  /* Reduced padding */
+  line-height: 1.1;
+}
+
+/* Status badges */
+.badge {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+/* Highlighted text styles */
+.highlighted-text {
+  background-color: #fff3cd !important;
+  border-radius: 2px;
+  padding: 1px 2px;
+  position: relative;
+}
+
+.highlighted-text[data-comment-id] {
+  background-color: #d4edda !important;
+}
+
+.highlighted-text[data-suggestededit-id] {
+  background-color: #cce5ff !important;
+}
+
+/* Don't show your old big on-page cards over content */
+.floating-comment,
+.floating-suggested-edit,
+.comment-input-modal,
+.suggest-edit-input-modal {
+  display: none !important;
+}
+
+/* Enhanced visual feedback for comment and suggestion system */
+.doc-rail__card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.doc-rail__card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+}
+
+.doc-rail__card:active {
+  transform: translateY(0);
+}
+
+/* Button hover effects */
+.doc-rail__card .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+/* Loading states */
+.doc-rail__card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.doc-rail__card.loading::after {
+  content: "Processing...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Success/Error states */
+.doc-rail__card.success {
+  border-color: #28a745;
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.doc-rail__card.error {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Animation for new comments/suggestions */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.doc-rail__card.new-item {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+/* Better focus states for accessibility */
+.doc-rail__card:focus-within {
+  outline: 2px solid #4285f4;
+  outline-offset: 2px;
+}
+
+/* Improved button states */
+.doc-rail__card .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Better spacing for reply sections */
+.reply-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.reply-item {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reply-item strong {
+  color: #4285f4;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.status-indicator.pending {
+  background-color: #ffc107;
+}
+
+.status-indicator.approved {
+  background-color: #28a745;
+}
+
+.status-indicator.declined {
+  background-color: #dc3545;
+}
+
+/* Better form controls */
+.doc-rail__composer .form-control {
+  transition: all 0.2s ease;
+}
+
+.doc-rail__composer .form-control:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.25);
+}
+
+/* Improved chip styling */
+.doc-rail__chip {
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.doc-rail__chip:hover {
+  background-color: #e3f2fd;
+  border-color: #bbdefb;
+}
+
+/* Better button grouping */
+.btn-group-vertical .btn {
+  margin-bottom: 4px;
+}
+
+.btn-group-vertical .btn:last-child {
+  margin-bottom: 0;
+}
