@@ -112,7 +112,7 @@ const server = http.createServer(app);
 app.use('/ProfileImg', express.static(path.join(__dirname, '../frontend/public/ProfileImg')));
 
 
-const cors = require('cors');
+
 
 app.use(cors({
   origin: 'https://saas-workflow-automation-platform.onrender.com', // আপনার লাইভ ফ্রন্টএন্ড URL দিন
@@ -122,7 +122,7 @@ app.use(cors({
 // Configure CORS to allow frontend access
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "https://saas-workflow-automation-platform.onrender.com",
     methods: ["GET", "POST"]
   }
 });
@@ -201,7 +201,7 @@ io.on('connection', (socket) => {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "https://saas-workflow-automation-platform.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
