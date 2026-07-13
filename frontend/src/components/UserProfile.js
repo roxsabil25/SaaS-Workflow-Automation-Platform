@@ -11,7 +11,7 @@ import {
   CheckCircleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
-const BACKEND_URL = 'http://localhost:5000'; // Express backend URL and port
+const BACKEND_URL = 'https://saas-workflow-automation-platform-backend.onrender.com'; // Express backend URL and port
 
 const { Title, Text } = Typography;
 
